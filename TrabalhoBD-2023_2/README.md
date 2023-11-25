@@ -6,4 +6,3 @@
 - Cadastrar os usuários
 - Permitir que os usuários cadastrados como clientes no banco realizem operações em sua conta. Exemplo: Saque, depósito, transferência e estorno.
 - Permitir que os usuários cadastrados como funcionários do banco realizem operações de acordo com sua função. Exemplo: Gerente, atendente, caixa ou DBA
-
