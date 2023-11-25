@@ -5,6 +5,6 @@
 <h3>Objetivos</h3>
 <ol>
   <li> Cadastrar os usuários do banco </li>
-  <li> Permitir que os usuários cadastrados como cliente realize operações na conta. Exemplo: Saque, depósito, transferência e estorno. </li>
-  <li> Permitir que os usuários cadastrados como funcionário realizem operações de acordo com suas funções no banco. Exemplo: Gerente, caixa, atendente, DBA.</li>
+  <li> Permitir que usuários cadastrados como cliente realize operações em sua conta. Exemplo: Saque, depósito, transferência e estorno. </li>
+  <li> Permitir que os usuários cadastrados como funcionário realize operações de acordo com suas funções no banco. Exemplo: Gerente, caixa, atendente, DBA.</li>
 </ol>
