@@ -1,5 +1,5 @@
 <?php
-$conexao = mysqli_connect("localhost", "root", "tinny123", "TrabalhoBD-2023_2");
+$conexao = mysqli_connect("localhost", "root", "", "trabalhobd-2023_2-416855");
 
 //checar conexão
 if (!$conexao) {
