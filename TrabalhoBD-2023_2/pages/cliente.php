@@ -2,7 +2,7 @@
     session_start();
 
     // Verifica se o usuário está autenticado
-
+    //include_once("../php/processa_acesso.php");
 
     include_once("../php/conexao.php");
 
