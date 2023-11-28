@@ -24,7 +24,9 @@ form {
 }
 
 input[type="text"],
-input[type="email"] {
+input[type="email"],
+input[type="password"],
+select {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -47,8 +49,7 @@ input[type="submit"]:hover {
     background-color: #45a049;
 }
 
-.error-message,
-.success-message {
+.message {
     padding: 10px;
     border-radius: 4px;
     margin-bottom: 15px;
@@ -64,4 +65,13 @@ input[type="submit"]:hover {
     color: #5bc0de;
     background-color: #d9edf7;
     border: 1px solid #bce8f1;
+}
+
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }

@@ -5,19 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../estilos/styles.css">
+    <link rel="stylesheet" type="text/css" href="../estilos/styles.css">
 </head>
 
 <body>
     <div class="container">
         <h2>Login</h2>
-        <form method="post" action="../php/processa_login.php">
-            Nome de Usuário, Email ou CPF: <input type="text" name="username" required><br>
-            Senha: <input type="password" name="password" required><br>
+        <form action="login.php" method="post">
+            <label for="username">Usuário:</label>
+            <input type="text" name="username" required><br>
+
+            <label for="password">Senha:</label> <br>
+            <input type="password" name="password" required><br>
+
             <input type="submit" value="Entrar">
         </form>
-
-        <p>Não tem uma conta? <a href="cadastro.php">Cadastre-se</a></p>
+        <br>
+        <a href="cadastro.php">Cadastre-se</a>
     </div>
 </body>
 
