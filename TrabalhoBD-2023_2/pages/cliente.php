@@ -61,7 +61,7 @@ session_start();
             <input type="submit" value="Executar">
         </form>
 
-        <p><a href="cliente.php">Nova Transação</a> | <a href="logout.php">Logout</a></p>
+        <p><a href="cliente.php">Nova Transação</a> | <a href="../php/logout.php">Logout</a></p>
     </div>
 
     <script>
