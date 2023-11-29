@@ -8,3 +8,12 @@
   <li> Permitir que usuários cadastrados como cliente realize operações em sua conta. Exemplo: Saque, depósito, transferência e estorno. </li>
   <li> Permitir que usuários cadastrados como funcionário realize operações de acordo com suas funções no banco. Exemplo: Gerente, caixa, atendente, DBA.</li>
 </ul>
+
+ <img src="imagens/login.jpeg" alt="">
+  <img src="imagens/cliente.jpeg" alt="">
+  <img src="imagens/operacoescliente.jpeg" alt="">
+  <img src="imagens/operacoes_caixa.jpeg" alt="">
+  <img src="imagens/gerente.jpeg" alt="">
+  <img src="imagens/acao_gerente.jpeg" alt="">
+  <img src="imagens/cadastro_cliente.jpeg" alt="">
+  <img src="imagens/endereco_cliente.jpeg" alt="">
