@@ -87,6 +87,45 @@ if ($p2.error) { $results += "POST login (cliente): ERROR - $($p2.error)" } else
 $c = Do-GET-HttpClient 'http://localhost:8000/pages/cadastro.php'
 if ($c.error) { $results += "GET /pages/cadastro.php: ERROR - $($c.error)" } else { $results += "GET /pages/cadastro.php: $($c.status) | Snippet: $($c.snippet)" }
 
+# 4b) Testar login + ação de transação (usar mesmo cookie container para preservar sessão)
+try {
+    $handler = New-Object System.Net.Http.HttpClientHandler
+    $handler.AllowAutoRedirect = $true
+    $handler.CookieContainer = New-Object System.Net.CookieContainer
+    $client = New-Object System.Net.Http.HttpClient($handler)
+
+    # login cliente (carlos123)
+    $body = "matricula_cpf=carlos123&senha=senha123"
+    $content = New-Object System.Net.Http.StringContent($body, [System.Text.Encoding]::UTF8, 'application/x-www-form-urlencoded')
+    $resp = $client.PostAsync('http://localhost:8000/php/login.php', $content).Result
+    $results += "LOGIN cliente status: $([int]$resp.StatusCode)"
+
+    # descobrir conta vinculada ao login e checar saldo antes
+    $argsConta = @('exec','-i','nullbank-db','mysql','-uroot','-ptinny123','-D','nullbank','-se',"SELECT conta_numero FROM possui WHERE login = 'carlos123' LIMIT 1;")
+    $conta = (& docker @argsConta) | Out-String; $conta = $conta.Trim()
+    if (-not $conta) { $results += "Conta vinculada não encontrada for login carlos123" } else {
+        $args = @('exec','-i','nullbank-db','mysql','-uroot','-ptinny123','-D','nullbank','-se',"SELECT saldo FROM conta WHERE numero = $conta;")
+        $beforeSaldo = (& docker @args) | Out-String; $beforeSaldo = $beforeSaldo.Trim()
+        $results += "Saldo antes (conta $conta): $beforeSaldo"
+    }
+
+    # executar deposito via cliente_actions.php
+    $body2 = "operation=deposito&valor=10"
+    $content2 = New-Object System.Net.Http.StringContent($body2, [System.Text.Encoding]::UTF8, 'application/x-www-form-urlencoded')
+    $resp2 = $client.PostAsync('http://localhost:8000/pages/cliente_actions.php', $content2).Result
+    $results += "POST cliente_actions status: $([int]$resp2.StatusCode)"
+
+    # checar saldo depois
+    if ($conta) {
+        $afterSaldo = (& docker @args) | Out-String; $afterSaldo = $afterSaldo.Trim()
+        $results += "Saldo depois (conta $conta): $afterSaldo"
+    }
+
+    $client.Dispose(); $handler.Dispose()
+} catch {
+    $results += "Login+Transacao test failed: " + $_.Exception.Message
+}
+
 # 5) DB check: count rows in possui (use bash -lc to avoid escaping issues)
 try {
     $args = @('exec','-i','nullbank-db','mysql','-uroot','-ptinny123','-D','nullbank','-se',"SELECT COUNT(*) FROM possui;")

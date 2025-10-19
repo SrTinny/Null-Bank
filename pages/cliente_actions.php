@@ -21,8 +21,14 @@ if ($valor <= 0) {
 
 // Determinar conta origem a partir da sessão (ou do POST se disponível)
 $contaOrigem = null;
+$cpf = null;
 if (isset($_SESSION['user_cpf'])) {
     $cpf = preg_replace('/\D/', '', $_SESSION['user_cpf']);
+} elseif (!empty($_SESSION['user_id']) && (!isset($_SESSION['user_type']) || $_SESSION['user_type'] === 'cliente')) {
+    // login.php define user_id para o cpf do cliente em autenticação de possui
+    $cpf = preg_replace('/\D/', '', $_SESSION['user_id']);
+}
+if ($cpf) {
     $stmt = $conn->prepare('SELECT p.conta_numero FROM possui p WHERE p.cliente_cpf = ? LIMIT 1');
     $stmt->bind_param('s', $cpf);
     $stmt->execute();

@@ -12,8 +12,12 @@ $clienteNome = 'Cliente Exemplo';
 $clienteCpf = '12345678900';
 $clienteSaldo = 'R$ 0,00';
 
+// sessão pode conter 'user_cpf' ou 'user_id' dependendo do fluxo de login; priorizar user_cpf
 if (isset($_SESSION['user_cpf'])) {
     $clienteCpf = preg_replace('/\D/', '', $_SESSION['user_cpf']);
+} elseif (!empty($_SESSION['user_id']) && (!isset($_SESSION['user_type']) || $_SESSION['user_type'] === 'cliente')) {
+    // login.php grava user_id com o cpf do cliente quando o usuário é cliente
+    $clienteCpf = preg_replace('/\D/', '', $_SESSION['user_id']);
     // incluir conexão e buscar nome/saldo se disponível
     try {
         require_once __DIR__ . '/../php/conexao.php';
