@@ -1,0 +1,38 @@
+## Composer / PHP
+/vendor/
+/composer.lock
+
+# Backups and exports
+/backups/
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## IDEs
+.vscode/
+/.idea/
+
+## Logs and runtime files
+/logs/
+/tmp/
+
+## Environment
+.env
+.env.*
+
+## Node
+/node_modules/
+npm-debug.log*
+yarn-error.log*
+
+## Docker
+/docker-compose.override.yml
+/.docker/
+
+## PHPStan cache and phpunit caches
+/phpstan.neon
+/phpstan.cache
+
+# Generated files
+/public/storage
