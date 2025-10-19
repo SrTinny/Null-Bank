@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Cliente</title>
+    <link rel="icon" type="image/png" href="../imagens/favicon.png">
     <link rel="stylesheet" href="../estilos/styles.css">
 </head>
 
@@ -92,40 +93,52 @@
         render_form:
     }
     ?>
-    <div class="container">
-        <h2>Cadastro de Cliente</h2>
-        <?php if (isset($success) && $success === true): ?>
-            <div style="padding:10px;background:#e6ffed;border:1px solid #2ecc71;margin-bottom:10px;">Cadastro realizado com sucesso.</div>
-        <?php elseif (isset($success) && $success === false): ?>
-            <div style="padding:10px;background:#ffe6e6;border:1px solid #e74c3c;margin-bottom:10px;">Erro ao cadastrar cliente: <?php echo htmlspecialchars($errorMessage ?? 'erro desconhecido'); ?></div>
-        <?php endif; ?>
-        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            CPF: <input type="text" name="cpf" required><br>
-            Nome: <input type="text" name="nome" required><br>
-            RG: <input type="text" name="rg" required><br>
-            Órgão Emissor: <input type="text" name="orgao_emissor" required><br>
-            UF: <input type="text" name="uf" required><br>
+    <header class="site-header">
+        <div style="display:flex;align-items:center;gap:12px">
+            <img src="../imagens/logo.svg" alt="Null-Bank" style="height:28px;">
+            <nav class="small" style="margin-left:10px"><a href="index.php">Home</a> · <a href="cadastro.php">Cadastro</a></nav>
+        </div>
+    </header>
+    <main class="main">
+        <div class="container">
+            <h2>Cadastro de Cliente</h2>
+            <?php if (isset($success) && $success === true): ?>
+                <div class="message success">Cadastro realizado com sucesso.</div>
+            <?php elseif (isset($success) && $success === false): ?>
+                <div class="message error">Erro ao cadastrar cliente: <?php echo htmlspecialchars($errorMessage ?? 'erro desconhecido'); ?></div>
+            <?php endif; ?>
 
-            <!-- Informações para tabela cliente_telefones -->
-            Telefone: <input type="text" name="telefone" required><br>
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <div class="form-row"><input class="form-control" type="text" name="cpf" placeholder="CPF (11 dígitos)" required></div>
+                <div class="form-row"><input class="form-control" type="text" name="nome" placeholder="Nome completo" required></div>
+                <div class="form-row"><input class="form-control" type="text" name="rg" placeholder="RG" required></div>
+                <div class="form-row"><input class="form-control" type="text" name="orgao_emissor" placeholder="Órgão Emissor" required></div>
+                <div class="form-row"><input class="form-control" type="text" name="uf" placeholder="UF" required></div>
 
-            <h2>Endereço</h2>
-            <!-- Informações para tabela endereco -->
-            Tipo: <input type="text" name="tipo" required><br>
-            Nome do Endereço: <input type="text" name="endereco_nome" required><br>
-            Número: <input type="text" name="numero" required><br>
-            Bairro: <input type="text" name="bairro" required><br>
-            CEP: <input type="text" name="cep" required><br>
-            Cidade: <input type="text" name="cidade" required><br>
-            Estado: <input type="text" name="estado" required><br>
-            Complemento: <input type="text" name="enderecocol" required><br>
+                <div class="form-row"><input class="form-control" type="text" name="telefone" placeholder="Telefone" required></div>
 
-            <!-- Informações para tabela cliente_email -->
-            Email: <input type="email" name="email" required><br>
+                <h2 style="margin-top:18px">Endereço</h2>
+                <div class="form-row row">
+                    <input class="form-control" type="text" name="tipo" placeholder="Tipo (Residencial/Comercial)" required>
+                    <input class="form-control" type="text" name="numero" placeholder="Número" required>
+                </div>
+                <div class="form-row"><input class="form-control" type="text" name="endereco_nome" placeholder="Nome do Endereço" required></div>
+                <div class="form-row"><input class="form-control" type="text" name="bairro" placeholder="Bairro" required></div>
+                <div class="form-row row">
+                    <input class="form-control" type="text" name="cep" placeholder="CEP" required>
+                    <input class="form-control" type="text" name="cidade" placeholder="Cidade" required>
+                </div>
+                <div class="form-row row">
+                    <input class="form-control" type="text" name="estado" placeholder="Estado" required>
+                    <input class="form-control" type="text" name="enderecocol" placeholder="Complemento">
+                </div>
 
-            <input type="submit" value="Cadastrar">
-        </form>
-    </div>
+                <div class="form-row"><input class="form-control" type="email" name="email" placeholder="Email" required></div>
+
+                <div class="form-row"><button class="btn" type="submit">Cadastrar</button></div>
+            </form>
+        </div>
+    </main>
 
 </body>
 

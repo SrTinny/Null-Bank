@@ -16,74 +16,48 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página do Cliente</title>
+    <link rel="icon" type="image/png" href="../imagens/favicon.png">
     <link rel="stylesheet" type="text/css" href="../estilos/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h2>NullBank!</h2>
+    <header class="site-header">
+        <div style="display:flex;align-items:center;gap:12px">
+            <img src="../imagens/logo.svg" alt="Null-Bank" style="height:28px;">
+            <nav class="small" style="margin-left:10px"><a href="index.php">Home</a> · <a href="cliente.php">Minha Conta</a></nav>
+        </div>
+    </header>
+    <main class="main">
+        <div class="container">
+            <h2>Minha Conta</h2>
+            <?php
+            // Exibir informações do cliente (substitua com a lógica real)
+            echo "<p class='small'>Nome: <strong>Cliente Exemplo</strong></p>";
+            echo "<p class='small'>CPF: <strong>123.456.789-00</strong></p>";
+            echo "<p class='small'>Saldo: <strong>R$ 1000.00</strong></p>";
+            ?>
 
-        <?php
-        // Exibir informações do cliente (substitua com a lógica real)
-        echo "<p>Nome: Cliente Exemplo</p>";
-        echo "<p>CPF: 123.456.789-00</p>";
-        echo "<p>Saldo: R$ 1000.00</p>";
-        ?>
+            <form action="cliente_actions.php" method="post">
+                <div class="form-row">
+                    <select class="form-control" name="operation" id="operationSelect" required>
+                        <option value="saque">Saque</option>
+                        <option value="deposito">Depósito</option>
+                        <option value="transferencia">Transferência</option>
+                    </select>
+                </div>
+                <div class="form-row"><input class="form-control" type="text" name="valor" placeholder="Valor" required></div>
 
-        <form action="cliente_actions.php" method="post">
-            <label for="operation">Operação:</label>
-            <select name="operation" id="operationSelect" required>
-                <option value="saque">Saque</option>
-                <option value="deposito">Depósito</option>
-                <option value="transferencia">Transferência</option>
-                <!-- Adicione outras operações conforme necessário -->
-            </select>
-            <br>
-            <label for="valor">Valor:</label>
-            <input type="text" name="valor" required>
+                <div id="contaDestinoField" style="display:none;" class="form-row">
+                    <input class="form-control" type="text" name="conta_destino" placeholder="Conta destino">
+                </div>
 
-            <div id="contaDestinoField" style="display:none;">
-                <label for="conta_destino">Conta Destino:</label>
-                <input type="text" name="conta_destino">
-            </div>
+                <div class="form-row"><button class="btn" type="submit">Executar</button></div>
+            </form>
 
-            <div id="saqueForm" style="display:none;">
-                <!-- Formulário específico para saque (adicione campos conforme necessário) -->
-            </div>
+            <div class="small"><a href="cliente.php">Nova Transação</a> | <a href="../php/logout.php">Logout</a></div>
+        </div>
+    </main>
 
-            <div id="depositoForm" style="display:none;">
-                <!-- Formulário específico para depósito (adicione campos conforme necessário) -->
-            </div>
-
-            <div id="transferenciaForm" style="display:none;">
-                <!-- Formulário específico para transferência (adicione campos conforme necessário) -->
-            </div>
-
-            <input type="submit" value="Executar">
-        </form>
-
-        <p><a href="cliente.php">Nova Transação</a> | <a href="../php/logout.php">Logout</a></p>
-    </div>
-
-    <script>
-        document.getElementById('operationSelect').addEventListener('change', function () {
-            var operation = this.value;
-            
-            // Ocultar todos os formulários
-            document.getElementById('saqueForm').style.display = 'none';
-            document.getElementById('depositoForm').style.display = 'none';
-            document.getElementById('transferenciaForm').style.display = 'none';
-            document.getElementById('contaDestinoField').style.display = 'none';
-
-            // Exibir formulário específico com base na operação selecionada
-            if (operation === 'saque') {
-                document.getElementById('saqueForm').style.display = 'block';
-            } else if (operation === 'deposito') {
-                document.getElementById('depositoForm').style.display = 'block';
-            } else if (operation === 'transferencia') {
-                document.getElementById('transferenciaForm').style.display = 'block';
-                document.getElementById('contaDestinoField').style.display = 'block';
-            }
-        });
-    </script>
+</body>
+</html>
 </body>
 </html>
