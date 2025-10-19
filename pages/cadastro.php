@@ -11,6 +11,8 @@
 <body>
     <?php
     include_once("../php/conexao.php"); // fornece $conn (mysqli OO)
+    // Ligar relatório de erros do mysqli para lançar exceções em falhas de query
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
     // Processar o formulário quando for enviado
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -34,6 +36,7 @@
         // Inserções em transação
         try {
             $conn->begin_transaction();
+            $inTransaction = true;
 
             $stmtCliente = $conn->prepare("INSERT INTO cliente (cpf, nome, RG, orgao_emissor, UF) VALUES (?, ?, ?, ?, ?)");
             $stmtCliente->bind_param('sssss', $cpf, $nome, $rg, $orgao_emissor, $uf);
@@ -53,10 +56,14 @@
 
             $conn->commit();
             $success = true;
-        } catch (Exception $e) {
-            $conn->rollback();
+        } catch (mysqli_sql_exception $e) {
+            // Garantir rollback e registrar erro para depuração
+            if (!empty($inTransaction)) {
+                $conn->rollback();
+            }
             $success = false;
             $errorMessage = $e->getMessage();
+            error_log("[cadastro.php] Erro ao inserir cliente: " . $errorMessage);
         }
     }
     ?>
