@@ -87,9 +87,10 @@ if ($p2.error) { $results += "POST login (cliente): ERROR - $($p2.error)" } else
 $c = Do-GET-HttpClient 'http://localhost:8000/pages/cadastro.php'
 if ($c.error) { $results += "GET /pages/cadastro.php: ERROR - $($c.error)" } else { $results += "GET /pages/cadastro.php: $($c.status) | Snippet: $($c.snippet)" }
 
-# 5) DB check: count rows in possui
+# 5) DB check: count rows in possui (use bash -lc to avoid escaping issues)
 try {
-    $dbout = docker exec nullbank-db mysql -uroot -ptinny123 -D nullbank -se "SELECT COUNT(*) FROM possui;"
+    $args = @('exec','-i','nullbank-db','mysql','-uroot','-ptinny123','-D','nullbank','-se',"SELECT COUNT(*) FROM possui;")
+    $dbout = & docker @args
     $results += "DB possui count: " + $dbout.Trim()
 } catch {
     $results += "DB check failed: " + $_.Exception.Message
@@ -100,26 +101,39 @@ $results -join "`n"
 
 # 6) Testar POST de cadastro (criar cliente de teste com CPF único)
 try {
-    $cpf = (Get-Date).ToString('yyyyMMddHHmmss')
+    # Gerar CPF de 11 dígitos aleatórios para teste (não é CPF válido, apenas 11 dígitos para caber na coluna)
+    $rand = -join ((1..11) | ForEach-Object { Get-Random -Minimum 0 -Maximum 10 })
+    $cpf = $rand
     $form = @{ cpf=$cpf; nome='Teste'; rg='0000000'; orgao_emissor='SSP'; uf='SP'; telefone='999999999'; tipo='Residencial'; endereco_nome='Rua Teste'; numero='1'; bairro='Centro'; cep='00000-000'; cidade='Cidade'; estado='SP'; enderecocol='Casa'; email="$cpf@test.local" }
     $p = Do-POST-HttpClient-Follow 'http://localhost:8000/pages/cadastro.php' $form
     if ($p.error) { $results += "POST cadastro: ERROR - $($p.error)" } else { $results += "POST cadastro: $($p.status) | Snippet: $($p.snippet)" }
 
-    # verificar inserção no DB
-    $check = docker exec nullbank-db mysql -uroot -ptinny123 -D nullbank -se "SELECT COUNT(*) FROM cliente WHERE cpf = '$cpf';"
+    # verificar inserção no DB (usar bash -lc para escapar apropriadamente)
+    $args = @('exec','-i','nullbank-db','mysql','-uroot','-ptinny123','-D','nullbank','-se',"SELECT COUNT(*) FROM cliente WHERE cpf = '$cpf';")
+    $check = & docker @args
     $results += "DB cliente criado (cpf=$cpf) count: " + $check.Trim()
 } catch {
     $results += "POST cadastro failed: " + $_.Exception.Message
 }
 
+# 6b) Testar cadastro duplicado: tentar criar o mesmo CPF novamente e verificar resposta de erro
+try {
+    $pDup = Do-POST-HttpClient-Follow 'http://localhost:8000/pages/cadastro.php' $form
+    if ($pDup.error) { $results += "POST cadastro duplicate: ERROR - $($pDup.error)" } else { $results += "POST cadastro duplicate: $($pDup.status) | Snippet: $($pDup.snippet)" }
+} catch {
+    $results += "POST cadastro duplicate failed: " + $_.Exception.Message
+}
+
 # 7) Simular transação (INSERT direto) e verificar incremento
 try {
     # contar transações atuais
-    $before = docker exec nullbank-db mysql -uroot -ptinny123 -D nullbank -se "SELECT COUNT(*) FROM transacao;" | Out-String
+    $args = @('exec','-i','nullbank-db','mysql','-uroot','-ptinny123','-D','nullbank','-se',"SELECT COUNT(*) FROM transacao;")
+    $before = (& docker @args) | Out-String
     $before = $before.Trim()
     # inserir transação de depósito para conta 1001
-    docker exec nullbank-db mysql -uroot -ptinny123 -D nullbank -se "INSERT INTO transacao (tipo, data_hora, valor, conta_numero) VALUES ('deposito', NOW(), 123.45, 1001);"
-    $after = docker exec nullbank-db mysql -uroot -ptinny123 -D nullbank -se "SELECT COUNT(*) FROM transacao;" | Out-String
+    $insertArgs = @('exec','-i','nullbank-db','mysql','-uroot','-ptinny123','-D','nullbank','-se',"INSERT INTO transacao (tipo, data_hora, valor, conta_numero) VALUES ('deposito', NOW(), 123.45, 1001);")
+    & docker @insertArgs
+    $after = (& docker @args) | Out-String
     $after = $after.Trim()
     $results += "Transacao count before: $before, after: $after"
 } catch {

@@ -38,6 +38,30 @@
             $conn->begin_transaction();
             $inTransaction = true;
 
+            // Normalizar e validar CPF: manter apenas dígitos e checar tamanho
+            $cpf = preg_replace('/\D+/', '', $cpf);
+            if (strlen($cpf) !== 11) {
+                $success = false;
+                $errorMessage = 'CPF inválido: deve conter 11 dígitos numéricos.';
+                // não prosseguir com inserções
+                $inTransaction = false;
+                goto render_form;
+            }
+
+            // Verificar se cliente já existe
+            $chk = $conn->prepare("SELECT COUNT(*) FROM cliente WHERE cpf = ?");
+            $chk->bind_param('s', $cpf);
+            $chk->execute();
+            $chk->bind_result($existingCount);
+            $chk->fetch();
+            $chk->close();
+            if (!empty($existingCount)) {
+                $success = false;
+                $errorMessage = 'Cliente já cadastrado com esse CPF.';
+                $inTransaction = false;
+                goto render_form;
+            }
+
             $stmtCliente = $conn->prepare("INSERT INTO cliente (cpf, nome, RG, orgao_emissor, UF) VALUES (?, ?, ?, ?, ?)");
             $stmtCliente->bind_param('sssss', $cpf, $nome, $rg, $orgao_emissor, $uf);
             $stmtCliente->execute();
@@ -65,10 +89,16 @@
             $errorMessage = $e->getMessage();
             error_log("[cadastro.php] Erro ao inserir cliente: " . $errorMessage);
         }
+        render_form:
     }
     ?>
     <div class="container">
         <h2>Cadastro de Cliente</h2>
+        <?php if (isset($success) && $success === true): ?>
+            <div style="padding:10px;background:#e6ffed;border:1px solid #2ecc71;margin-bottom:10px;">Cadastro realizado com sucesso.</div>
+        <?php elseif (isset($success) && $success === false): ?>
+            <div style="padding:10px;background:#ffe6e6;border:1px solid #e74c3c;margin-bottom:10px;">Erro ao cadastrar cliente: <?php echo htmlspecialchars($errorMessage ?? 'erro desconhecido'); ?></div>
+        <?php endif; ?>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             CPF: <input type="text" name="cpf" required><br>
             Nome: <input type="text" name="nome" required><br>

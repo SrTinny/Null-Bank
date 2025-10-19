@@ -66,3 +66,10 @@ Ordem recomendada para migração completa (opcional):
 3. Verificar logins em `pages/index.php` — `php/login.php` dará preferência à tabela `users`.
 
 Observação: faça backup do banco antes de rodar os scripts.
+
+Quick test (local)
+1. Levante os containers: docker compose up -d
+2. Rode os testes automáticos: powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tests.ps1
+
+Remoção do log temporário
+- O arquivo `/tmp/cadastro_debug.log` é criado apenas para depuração local. Remova-o do container com: `docker exec -it nullbank-app rm /tmp/cadastro_debug.log` quando não for mais necessário.
