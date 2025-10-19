@@ -11,12 +11,12 @@
 <body>
     <div class="container">
         <h2>Login</h2>
-        <form action="login.php" method="post">
-            <label for="username">Usuário:</label>
-            <input type="text" name="username" required><br>
+        <form action="../php/login.php" method="post">
+            <label for="matricula_cpf">Matrícula/CPF:</label>
+            <input type="text" name="matricula_cpf" required><br>
 
-            <label for="password">Senha:</label> <br>
-            <input type="password" name="password" required><br>
+            <label for="senha">Senha:</label> <br>
+            <input type="password" name="senha" required><br>
 
             <input type="submit" value="Entrar">
         </form>

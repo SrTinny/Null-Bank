@@ -10,45 +10,54 @@
 
 <body>
     <?php
-    include_once("../php/conexao.php");
+    include_once("../php/conexao.php"); // fornece $conn (mysqli OO)
 
     // Processar o formulário quando for enviado
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Coletar dados do formulário
-        $cpf = $_POST['cpf'];
-        $nome = $_POST['nome'];
-        $rg = $_POST['rg'];
-        $orgao_emissor = $_POST['orgao_emissor'];
-        $uf = $_POST['uf'];
+        // Coletar dados do formulário com fallback
+        $cpf = $_POST['cpf'] ?? '';
+        $nome = $_POST['nome'] ?? '';
+        $rg = $_POST['rg'] ?? '';
+        $orgao_emissor = $_POST['orgao_emissor'] ?? '';
+        $uf = $_POST['uf'] ?? '';
+        $telefone = $_POST['telefone'] ?? '';
+        $tipo = $_POST['tipo'] ?? '';
+        $endereco_nome = $_POST['endereco_nome'] ?? '';
+        $numero = $_POST['numero'] ?? '';
+        $bairro = $_POST['bairro'] ?? '';
+        $cep = $_POST['cep'] ?? '';
+        $cidade = $_POST['cidade'] ?? '';
+        $estado = $_POST['estado'] ?? '';
+        $enderecocol = $_POST['enderecocol'] ?? '';
+        $email = $_POST['email'] ?? '';
 
-        // Inserir dados na tabela cliente
-        $sqlCliente = "INSERT INTO cliente (cpf, nome, RG, orgao_emissor, UF) VALUES ('$cpf', '$nome', '$rg', '$orgao_emissor', '$uf')";
+        // Inserções em transação
+        try {
+            $conn->begin_transaction();
 
-        // Coletar dados para a tabela cliente_telefones
-        $telefone = $_POST['telefone'];
+            $stmtCliente = $conn->prepare("INSERT INTO cliente (cpf, nome, RG, orgao_emissor, UF) VALUES (?, ?, ?, ?, ?)");
+            $stmtCliente->bind_param('sssss', $cpf, $nome, $rg, $orgao_emissor, $uf);
+            $stmtCliente->execute();
 
-        // Inserir dados na tabela cliente_telefones
-        $sqlTelefone = "INSERT INTO cliente_telefones (telefone, cliente_cpf) VALUES ('$telefone', '$cpf')";
+            $stmtTel = $conn->prepare("INSERT INTO cliente_telefones (telefone, cliente_cpf) VALUES (?, ?)");
+            $stmtTel->bind_param('ss', $telefone, $cpf);
+            $stmtTel->execute();
 
-        // Coletar dados para a tabela endereco
-        $tipo = $_POST['tipo'];
-        $endereco_nome = $_POST['endereco_nome'];
-        $numero = $_POST['numero'];
-        $bairro = $_POST['bairro'];
-        $cep = $_POST['cep'];
-        $cidade = $_POST['cidade'];
-        $estado = $_POST['estado'];
-        $enderecocol = $_POST['enderecocol'];
+            $stmtEnd = $conn->prepare("INSERT INTO endereco (cliente_cpf, tipo, nome, numero, bairro, CEP, cidade, estado, enderecocol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmtEnd->bind_param('ssissssss', $cpf, $tipo, $endereco_nome, $numero, $bairro, $cep, $cidade, $estado, $enderecocol);
+            $stmtEnd->execute();
 
-        // Inserir dados na tabela endereco
-        $sqlEndereco = "INSERT INTO endereco (cliente_cpf, tipo, nome, numero, bairro, CEP, cidade, estado, enderecocol) 
-                        VALUES ('$cpf', '$tipo', '$endereco_nome', '$numero', '$bairro', '$cep', '$cidade', '$estado', '$enderecocol')";
+            $stmtEmail = $conn->prepare("INSERT INTO cliente_email (email, cliente_cpf) VALUES (?, ?)");
+            $stmtEmail->bind_param('ss', $email, $cpf);
+            $stmtEmail->execute();
 
-        // Coletar dados para a tabela cliente_email
-        $email = $_POST['email'];
-
-        // Inserir dados na tabela cliente_email
-        $sqlEmail = "INSERT INTO cliente_email (email, cliente_cpf) VALUES ('$email', '$cpf')";
+            $conn->commit();
+            $success = true;
+        } catch (Exception $e) {
+            $conn->rollback();
+            $success = false;
+            $errorMessage = $e->getMessage();
+        }
     }
     ?>
     <div class="container">
