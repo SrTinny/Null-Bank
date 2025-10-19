@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  nullbank-app:
+    container_name: nullbank-app
+    build: ./docker/php
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html:cached
+    depends_on:
+      - nullbank-db
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+
+  nullbank-db:
+    container_name: nullbank-db
+    image: mysql:8.0
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: tinny123
+      MYSQL_DATABASE: nullbank
+    volumes:
+      - nullbank_db_data:/var/lib/mysql
+
+volumes:
+  nullbank_db_data:

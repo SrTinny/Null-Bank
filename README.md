@@ -1,24 +1,72 @@
-<h1>NullBank 💰 🎲 </h1>
-<h2>Sobre o projeto</h2>
-<h3>Visão geral</h3>
-<p>O projeto foi desenvolvido como parte das atividades práticas da disciplina de Banco de Dados da Universidade Federal do Ceará, campus Sobral, sob a orientação do professor Fernando de Almeida. A estrutura do banco de dados, definida por este script MySQL, reflete a aplicação concreta dos conceitos discutidos em sala de aula durante o semestre.<p>
-<h3>Objetivos</h3>
-<ul>
-  <li> Cadastrar os usuários do banco </li>
-  <li> Permitir que usuários cadastrados como cliente realize operações em sua conta. Exemplo: Saque, depósito, transferência e estorno. </li>
-  <li> Permitir que usuários cadastrados como funcionário realize operações de acordo com suas funções no banco. Exemplo: Gerente, caixa, atendente, DBA.</li>
-</ul>
-<h2>Janelas da aplicação 🖥️ </h2>
+# Null-Bank
 
-  ◾ Telas do cliente 
+Null-Bank é um projeto didático de um sistema bancário (PHP + MySQL). O repositório contém o frontend/server em PHP procedural (páginas em `pages/` e handlers em `php/`) e scripts auxiliares para migração, além de um scaffold inicial para migração futura para Laravel.
 
- <img src="imagens/login.jpeg" alt="">
-  <img src="imagens/cliente.jpeg" alt="">
-  <img src="imagens/operacoescliente.jpeg" alt="">
-  <img src="imagens/operacoes_caixa.jpeg" alt="">
-   ◾ Telas de gerenciamento 
-  <img src="imagens/gerente.jpeg" alt="">
-  <img src="imagens/acao_gerente.jpeg" alt="">
-   ◾ Telas de cadastro para novo cliente 
-  <img src="imagens/cadastro_cliente.jpeg" alt="">
-  <img src="imagens/endereco_cliente.jpeg" alt="">
+## Estrutura principal
+
+- `pages/` — páginas PHP/HTML do frontend
+- `php/` — handlers e scripts PHP (login, migração de senhas, helpers)
+- `modelagem/` — esquema SQL e povoamento
+- `docker-compose.yml` e `docker/` — ambiente Docker para app + MySQL
+
+## Como rodar (recomendado: Docker)
+
+1. Abra PowerShell no diretório do projeto (onde está `docker-compose.yml`).
+2. Construir imagens e subir containers:
+
+```powershell
+docker compose build
+docker compose up -d
+```
+
+3. Verifique os containers:
+
+```powershell
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+```
+
+4. Acesse a aplicação no navegador: `http://localhost:8000/pages/index.php`
+
+5. O MySQL está mapeado para a porta `3307` do host. Exemplo de conexão via cliente MySQL:
+
+```powershell
+mysql -h 127.0.0.1 -P 3307 -u root -p
+# senha: tinny123
+USE nullbank;
+SHOW TABLES;
+```
+
+## Credenciais de teste
+
+- Funcionário (Gerente): matrícula `1` / senha `senha123`  → redireciona para `/pages/gerente.php`
+- Cliente: login `carlos123` / senha `senha123` → redireciona para `/pages/cliente.php`
+
+> Observação: as senhas podem ter sido migradas para hashes; os scripts de migração estão incluídos e as credenciais acima foram verificadas neste ambiente.
+
+## Scripts úteis
+
+- `php/migrate_passwords.php` — re-hash em `funcionario` (texto → hash)
+- `php/migrate_funcionarios_to_users.php` — migra funcionários para `users`
+- `php/migrate_possui_passwords.php` — re-hash em `possui` (clientes)
+
+Executar dentro do container da app:
+
+```powershell
+docker exec -u root nullbank-app bash -lc "php php/migrate_possui_passwords.php"
+```
+
+## Notas de segurança
+
+- Use `password_hash`/`password_verify` para todas as senhas (já aplicado nos handlers principais).
+- Não coloque arquivos de backup ou `vendor/` no repositório público (já adicionado `.gitignore`).
+- Em produção, habilite HTTPS, limite de tentativas de login e monitore logs de autenticação.
+
+## Próximos passos recomendados
+
+- Consolidar autenticação em uma tabela `users` única e migrar os logins legados.
+- Reimplementar triggers com testes (originalmente removidos por incompatibilidades no SQL importado).
+- Migrar o projeto para Laravel se desejar usar migrations/seeders e um fluxo mais moderno.
+
+---
+
+Se quiser, eu atualizo também o `README_SECURITY.md` com o histórico das mudanças de segurança e instruções de rollback.
