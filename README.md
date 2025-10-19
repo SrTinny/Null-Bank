@@ -61,10 +61,4 @@ docker exec -u root nullbank-app bash -lc "php php/migrate_possui_passwords.php"
 - Não coloque arquivos de backup ou `vendor/` no repositório público (já adicionado `.gitignore`).
 - Em produção, habilite HTTPS, limite de tentativas de login e monitore logs de autenticação.
 
-## Próximos passos
-
-- Consolidar autenticação em uma tabela `users` única e migrar os logins legados.
-- Reimplementar triggers com testes (originalmente removidos por incompatibilidades no SQL importado).
-- Migrar o projeto para Laravel se desejar usar migrations/seeders e um fluxo mais moderno.
-
 
