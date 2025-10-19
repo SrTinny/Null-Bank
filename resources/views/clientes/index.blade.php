@@ -26,7 +26,7 @@
     <main class="container">
         <h1 class="page-title">Clientes</h1>
 
-        @if(isset($clientes) && count($clientes))
+        @if(isset($clientes) && $clientes->count())
             <ul class="clientes-list">
             @foreach($clientes as $c)
                 <li class="cliente-item">
@@ -35,6 +35,9 @@
                 </li>
             @endforeach
             </ul>
+            <div class="pagination">
+                {{ $clientes->links() }}
+            </div>
         @else
             <p class="muted">Nenhum cliente encontrado.</p>
         @endif
